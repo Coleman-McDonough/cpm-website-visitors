@@ -1,13 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Line } from "react-chartjs-2";
+import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
-  PointElement,
-  LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend,
@@ -16,8 +15,7 @@ import {
 ChartJS.register(
   CategoryScale,
   LinearScale,
-  PointElement,
-  LineElement,
+  BarElement,
   Title,
   Tooltip,
   Legend
@@ -91,9 +89,7 @@ export default function VisitorDataDashboard() {
         {
           label: `${name} Visitors`,
           data: Object.values(visitsPerPeriod).map((v) => Math.round(v)),
-          borderColor: "rgba(75, 192, 192, 0.6)",
-          backgroundColor: "rgba(75, 192, 192, 0.3)",
-          fill: true,
+          backgroundColor: "rgba(75, 192, 192, 0.6)",
         },
       ],
     };
@@ -137,21 +133,21 @@ export default function VisitorDataDashboard() {
         </button>
       </div>
       <div
-        className={`grid gap-6 ${
+        className={`grid md:gap-6 ${
           displayedWebsites.length > 1
             ? "md:grid-cols-2 grid-cols-1"
             : "grid-cols-1"
         }`}
       >
         {displayedWebsites.map((site) => (
-          <div key={site} className="mb-6">
+          <div key={site} className="md:mb-6">
             <h2 className="text-xl font-semibold mb-2">{site}</h2>
             <div
               className={`w-full ${
                 displayedWebsites.length === 1 ? "h-96" : "h-64"
               }`}
             >
-              <Line data={getChartData(site)} />
+              <Bar data={getChartData(site)} />
             </div>
           </div>
         ))}
