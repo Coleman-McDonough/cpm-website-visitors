@@ -2,7 +2,21 @@ import { NextRequest, NextResponse } from "next/server";
 import { MongoClient } from "mongodb";
 
 const MONGODB_URI = process.env.MONGODB_URI || "";
-const client = new MongoClient(MONGODB_URI);
+
+type GlobalMongo = typeof globalThis & {
+  _mongoClientPromise?: Promise<MongoClient>;
+};
+
+async function getClient(): Promise<MongoClient> {
+  if (!MONGODB_URI) {
+    throw new Error("MONGODB_URI is not set");
+  }
+  const globalForMongo = globalThis as GlobalMongo;
+  if (!globalForMongo._mongoClientPromise) {
+    globalForMongo._mongoClientPromise = new MongoClient(MONGODB_URI).connect();
+  }
+  return globalForMongo._mongoClientPromise;
+}
 
 const websites = [
   "cpmccVisitors",
@@ -23,7 +37,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    await client.connect();
+    const client = await getClient();
     const db = client.db(dbName);
     const visitors = await db.collection("mainPage").find({}).toArray();
 
